@@ -4,3 +4,6 @@
 [submodule "gaema"]
 	path = gaema
 	url = git://github.com/lann/gaema.git
+[submodule "google_appengine"]
+	path = google_appengine
+	url = git://github.com/lann/google-appengine-python.git
