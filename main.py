@@ -1,7 +1,7 @@
 import sys
 
 
-sys.path.insert(0, 'bottle')
+sys.path.insert(0, 'lib/bottle')
 import bottle
 from bottle import route
 from bottle import request
@@ -31,7 +31,7 @@ def create_expense_post():
 
         
 # Session middleware        
-sys.path.insert(0, 'beaker')
+sys.path.insert(0, 'lib/beaker')
 from beaker.middleware import SessionMiddleware
 
 app = SessionMiddleware(bottle.app(), {
