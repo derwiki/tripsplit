@@ -7,3 +7,6 @@
 [submodule "google_appengine"]
 	path = google_appengine
 	url = git://github.com/lann/python-google-appengine.git
+[submodule "beaker"]
+	path = beaker
+	url = git://github.com/lann/python-beaker.git
