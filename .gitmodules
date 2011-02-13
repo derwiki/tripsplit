@@ -3,7 +3,7 @@
 	url = https://github.com/defnull/bottle.git
 [submodule "gaema"]
 	path = gaema
-	url = git://github.com/lann/gaema.git
+	url = git://github.com/lann/python-gaema.git
 [submodule "google_appengine"]
 	path = google_appengine
-	url = git://github.com/lann/google-appengine-python.git
+	url = git://github.com/lann/python-google-appengine.git
