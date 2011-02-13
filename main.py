@@ -1,6 +1,7 @@
 import sys
-sys.path.insert(0, 'bottle')
 
+
+sys.path.insert(0, 'bottle')
 import bottle
 from bottle import route
 from bottle import request
@@ -28,5 +29,24 @@ def create_expense_post():
 	expense = models.Expense(**data)
 	print expense
 
+        
+# Session middleware        
+sys.path.insert(0, 'beaker')
+from beaker.middleware import SessionMiddleware
+
+app = SessionMiddleware(bottle.app(), {
+        'session.auto': True,
+        'session.type': 'ext:google',
+        })
+
+@route
+def session_test():
+    session = request.environ.get('beaker.session')
+    session.setdefault('test', 0)
+    session['test'] += 1
+    return dict(test=session['test'])
+
+
+# Run server
 bottle.debug()
-bottle.run(server=bottle.AppEngineServer)
+bottle.run(app=app, server=bottle.AppEngineServer)
