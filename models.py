@@ -16,16 +16,22 @@ class User(StandardModel):
 	username = db.StringProperty()
 	email = db.StringProperty()
 
+class Trip(StandardModel):
+	creator = User()
+	name = db.StringProperty()
+	description = db.StringProperty()
+	created = db.DateTimeProperty(auto_now_add=True)
+
 class Expense(StandardModel):
 	payer = User()
 	amount = db.FloatProperty()
 	description = db.StringProperty()
 	notes = db.StringProperty()
 	created = db.DateTimeProperty(auto_now_add=True)
+	trip = db.ReferenceProperty(reference_class=Trip)
+
+class Participant(StandardModel):
+	user = db.ReferenceProperty(reference_class=User)
+	trip = db.ReferenceProperty(reference_class=Trip)
 
 
-class Trip(StandardModel):
-	creator = User()
-	name = db.StringProperty()
-	description = db.StringProperty()
-	created = db.DateTimeProperty(auto_now_add=True)
