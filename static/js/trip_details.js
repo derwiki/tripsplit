@@ -4,6 +4,7 @@ trip_details.pageLoaded = function() {
 	console.log('entering pageLoaded');
 	$('#add-participant-form').submit(trip_details.addParticipantHandler);
 	$('#list-participants').click(trip_details.removeParticipantHandler);
+	$('#add-expense-form').submit(trip_details.addExpenseHandler);
 };
 
 
@@ -14,7 +15,7 @@ trip_details.addParticipantHandler = function () {
 	};
 
 	$.post('/add_participant', data, function(resp) {
-		var respJSON = JSON.parse(resp)
+		var respJSON = JSON.parse(resp);
 		console.log(respJSON);
 		if (respJSON.success) {
 			var new_participant = '<tr id="participant-' + respJSON.participant + '">\n';
@@ -28,6 +29,32 @@ trip_details.addParticipantHandler = function () {
 			console.log(respJSON.error);
 		}
 	});
+	return false;
+};
+
+trip_details.addExpenseHandler = function() {
+	var data = {'trip': $('select#add-expense-trip').val()};
+	$.each($('#add-expense-form input[type="text"]'), function(index, field) {
+		data[field.name] = field.value;
+	});
+	console.log('data', data);
+
+	$.post('/add_expense', data, function(resp) {
+		var respJSON = JSON.parse(resp);
+		console.log(respJSON);
+		if (respJSON.success) {
+			var new_row = "<tr><td><a href='#'>[ X ]</a></td>";
+			$.each(['created', 'username', 'amount', 'description'], function(index, key) {
+				new_row += "<td>" + respJSON[key] + "</td>";
+			});
+			new_row += "</tr>";
+			$('table#list-expenses tbody').append(new_row);
+			console.log(respJSON);
+		} else {
+			console.log(respJSON.error);
+		}
+	});
+
 	return false;
 };
 

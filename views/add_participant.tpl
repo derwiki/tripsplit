@@ -22,7 +22,7 @@
 		</td>
 	<tr>
 		<td></td>
-		<td><input type='submit' value='Add Participant &raquo;' id='add-participant-submit'></td>
+		<td><input type='submit' value='Add Participant &raquo;'></td>
 	</tr></tr>
 </table>
 </form>

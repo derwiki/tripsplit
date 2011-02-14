@@ -25,24 +25,24 @@ def login(username):
     else:
         return {'status': 'failure', 'reason': 'Not found'}
 
-@route('/create_expense', method='GET')
-@view('create_expense')
-def create_expense_get():
-	trips = models.Trip.all()
-	return dict(trips=trips)
-
 def data_from_post(request, *keys):
 	return dict((key, request.POST.get(key)) for key in keys)
 
-@route('/create_expense', method='POST')
-def create_expense_post():
-	print ''
-	data = data_from_post(request, 'amount', 'description', 'notes', 'trip')
-	data['amount'] = float(data['amount'])
-	data['trip'] = models.Trip.get_by_id(int(data['trip']))
-	expense = models.Expense(**data)
-	expense.put()
-	print expense
+@route('/add_expense', method='POST')
+def add_expense():
+	try:
+		loggedin_user = request.user
+		data = data_from_post(request, 'amount', 'description', 'notes', 'trip')
+		data['amount'] = float(data['amount'])
+		data['trip'] = models.Trip.get_by_id(int(data['trip']))
+		data['payer'] = loggedin_user
+		expense = models.Expense(**data)
+		expense.put()
+		trip = data['trip']
+		del data['trip']
+		return json.dumps(dict(success=True, trip=trip.key().id(), created=expense.created.strftime('%Y-%m-%d'), expense_id=expense.key().id(), **data))
+	except Exception, e:
+		return json.dumps(dict(sucess=False, error=e))
 
 #TODO @ajax
 @route('/add_participant', method='POST')

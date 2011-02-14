@@ -12,12 +12,17 @@ $(document).ready(function() {
 </head>
 <body>
 
-<div style='text-align: right;'>Logged in as <a href='#'>{{loggedin_user.username}}</a></div>
+<div style='text-align: right;'>
+	% if loggedin_user:
+		Logged in as <a href='#'>{{loggedin_user.username}}</a>
+	% else:
+		<a href='#'>login</a>
+</div>
 
 <h3>Expenses</h3>
 %include list_expenses expenses=expenses
 <div>Add new expense</div>
-%include create_expense trips=[trip]
+%include add_expense trips=[trip]
 <br>
 
 <h3>Participants</h3>
