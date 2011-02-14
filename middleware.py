@@ -13,8 +13,11 @@ def TripsplitMiddleware(app):
         request.session = session
 
         # Add user
-        user_key = session.get('user_key', '')
-        request.user = models.User.get(user_key)
+        user_key = session.get('user_key')
+        if user_key:
+            request.user = models.User.get(user_key)
+        else:
+            request.user = None
         
         return app(environ, start_response)
     return wrapper

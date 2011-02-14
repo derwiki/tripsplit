@@ -10,7 +10,19 @@ import models
 
 @route('/')
 def index():
+    if request.user:
+        return 'Welcome %s' % request.user.username
     return 'index'
+
+@route('/login/:username')
+def login(username):
+    user = models.User.all().filter('username =', username).get()
+    if user:
+        request.session['user_key'] = str(user.key())
+        return {'status': 'success'}
+    else:
+        return {'status': 'failure', 'reason': 'Not found'}
+        
 
 @route('/create_expense', method='GET')
 @view('create_expense')
