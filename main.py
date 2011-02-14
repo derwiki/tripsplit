@@ -57,7 +57,16 @@ def add_participant():
 		return json.dumps(dict(success=False, error='%s is already participating on %s' % (user, trip)))
 	participant = models.Participant(user=user, trip=trip)
 	participant.put()
-	return json.dumps(dict(success=True, username=user.username, email=user.email))
+	return json.dumps(dict(success=True, username=user.username, email=user.email, participant=participant.key().id()))
+
+@route('/remove_participant', method='POST')
+def remove_participant():
+	participant_id = request.POST.get('participant');
+	participant = models.Participant.get_by_id(int(participant_id))
+	user_id = participant.user.key().id()
+	user_name = participant.user.username
+	participant.delete()
+	return json.dumps(dict(success=True, user_id=user_id, username=user_name))
 
 @route('/trip_details/:trip_id')
 @validate(trip_id=int)

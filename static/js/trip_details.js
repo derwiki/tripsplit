@@ -1,23 +1,24 @@
-var trip_details = {};
+var trip_details = trip_details || {};
 
 trip_details.pageLoaded = function() {
 	console.log('entering pageLoaded');
 	$('#add-participant-form').submit(trip_details.addParticipantHandler);
+	$('#list-participants').click(trip_details.removeParticipantHandler);
 };
 
 
 trip_details.addParticipantHandler = function () {
 	var data = {
 		'user': $('select#add-participant').val(),
-		'trip': $('select#add-participant-trip').val(),
+		'trip': $('select#add-participant-trip').val()
 	};
 
 	$.post('/add_participant', data, function(resp) {
 		var respJSON = JSON.parse(resp)
 		console.log(respJSON);
 		if (respJSON.success) {
-			var new_participant = '<tr>\n';
-			new_participatn += '<td><a href="#">[ X ]</a></td>';
+			var new_participant = '<tr id="participant-' + respJSON.participant + '">\n';
+			new_participant += '<td><a href="#">[ X ]</a></td>';
 			new_participant += ('<td>' + respJSON.username + '</td>\n');
 			new_participant += ('<td>' + respJSON.email+ '</td>\n');
 			new_participant += '</tr>\n';
@@ -29,3 +30,34 @@ trip_details.addParticipantHandler = function () {
 	});
 	return false;
 };
+
+trip_details.removeParticipantHandler = function(e) {
+	// id='participant,<id>'
+	var participantRowId = e.target.parentElement.parentElement.id;
+	var participantId = participantRowId.split('-')[1];
+	var data = {'participant': participantId};
+
+	console.log('data', data);
+	$.post('/remove_participant', data, function(resp) {
+		var respJSON = JSON.parse(resp)
+		console.log(respJSON);
+		if (respJSON.success) {
+			// remove row
+			$('#' + participantRowId).remove();
+
+			// add participant back to dropdown
+			var new_option = '<option value="' + respJSON['user_id'] + '">' + respJSON['username'] + '</option>\n';
+			// handle cases both when select has children and when it is empty
+			if ($('select#add-participant option:last').length > 0) {
+				$('select#add-participant option:last').after(new_option);
+			} else {
+				$('select#add-participant').html(new_option);
+			}
+
+		} else {
+			console.log(respJSON.error);
+		}
+	});
+	return false;
+};
+	
