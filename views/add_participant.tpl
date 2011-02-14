@@ -1,5 +1,4 @@
 <form method="POST" action='/add_participant'>
-
 <table>
 	<tr>
 		<td><label for='trip'>Trip</label></td>
@@ -13,9 +12,9 @@
 	</tr>
 
 	<tr>
-		<td><label for='user'>User</label></td>
+		<td><label for='add-participant'>User</label></td>
 		<td>
-			<select name='user' id='user'>
+			<select name='user' id='add-participant'>
 			% for user in users:
 				<option value='{{user.key().id()}}'>{{user.username}}</option>
 			% end

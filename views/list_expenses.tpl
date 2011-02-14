@@ -1,9 +1,3 @@
-<html>
-<head>
-<title>List Expenses</title>
-</head>
-<body>
-
 <table cellspacing='10'>
 	<tr>
 		<td>Created</td>
@@ -20,16 +14,3 @@
 	</tr>
 	% end
 </table>
-
-<br>
-Add new expense:<br>
-%include create_expense trips=[trip]
-
-<br>
-Participants:<br>
-%include list_participants participants=participants
-
-%include add_participant trips=[trip], users=users
-
-</body>
-</html>

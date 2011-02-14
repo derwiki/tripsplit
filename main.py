@@ -54,15 +54,22 @@ def add_participant():
 	participant.put()
 	print participant
 
-@route('/list_expenses/:trip_id')
+@route('/trip_details/:trip_id')
 @validate(trip_id=int)
-@view('list_expenses')
+@view('trip_details')
 def list_expenses(trip_id):
 	trip = models.Trip.get_by_id(trip_id)
 	expenses = models.Expense.all().filter('trip =', trip)
 	participants = models.Participant.all().filter('trip =', trip)
 	users = models.User.all()
 	return dict(expenses=expenses, trip=trip, participants=participants, users=users)
+
+@route('/list_trips')
+@view('list_trips')
+def list_trips():
+	return dict(
+		trips=models.Trip.all(),
+	)
 
 @route
 def session_test():

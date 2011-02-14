@@ -1,5 +1,4 @@
 <form method="POST" action='/create_expense'>
-
 <table>
 	<tr>
 		<td><label for='trip'>Trip</label></td>
