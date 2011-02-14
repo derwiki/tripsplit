@@ -52,6 +52,9 @@ def add_participant():
 	user = models.User.get_by_id(int(user_id))
 	trip = models.Trip.get_by_id(int(trip_id))
 	#TODO enforce uniqueness constraint
+	already_participant = models.Participant.all().filter('trip =', trip).filter('user =', user)
+	if already_participant.fetch(1):
+		return json.dumps(dict(success=False, error='%s is already participating on %s' % (user, trip)))
 	participant = models.Participant(user=user, trip=trip)
 	participant.put()
 	return json.dumps(dict(success=True, username=user.username, email=user.email))
