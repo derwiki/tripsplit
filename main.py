@@ -98,6 +98,12 @@ def session_test():
     return {'test': request.session['test']}
 
 # Run server
+@bottle.error()
+def errors(err):
+    import sys, traceback
+    sys.stderr.write(err.traceback)
+    return repr(err)
+
 from middleware import app
 bottle.debug()
 bottle.run(app=app, server=bottle.AppEngineServer)
