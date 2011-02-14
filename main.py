@@ -1,4 +1,4 @@
-import sys
+import lib # Inits sys.path
 
 import bottle
 from bottle import route

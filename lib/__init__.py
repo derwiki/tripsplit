@@ -1,5 +1,4 @@
-sys.path.insert(0, 'bottle')
-import bottle
+import sys
 
-sys.path.insert(0, 'beaker')
-import beaker
+sys.path.insert(0, 'lib/bottle')
+sys.path.insert(0, 'lib/beaker')

@@ -1,19 +1,28 @@
-from lib import bottle
+import bottle
 app = bottle.app()
 
-
 # Tripsplit middleware
+import models
+
 def TripsplitMiddleware(app):
     def wrapper(environ, start_response):
+        request = bottle.request
+        
         # Add session
-        bottle.request.session = environ['beaker.session']
+        session = environ['beaker.session']
+        request.session = session
+
+        # Add user
+        user_key = session.get('user_key', '')
+        request.user = models.User.get(user_key)
+        
         return app(environ, start_response)
     return wrapper
 app = TripsplitMiddleware(app)
 
 
 # Session middleware        
-from lib.beaker.middleware import SessionMiddleware
+from beaker.middleware import SessionMiddleware
 
 app = SessionMiddleware(app, {
         'session.auto': True,
