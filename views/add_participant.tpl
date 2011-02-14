@@ -1,9 +1,9 @@
-<form method="POST" action='/add_participant'>
+<form method="POST" action='/add_participant' id='add-participant-form'>
 <table>
 	<tr>
 		<td><label for='trip'>Trip</label></td>
 		<td>
-			<select name='trip' id='trip'>
+			<select name='trip' id='add-participant-trip'>
 			% for trip in trips:
 				<option value='{{trip.key().id()}}'>{{trip.name}} ({{trip.created.strftime('%Y-%m-%d')}})</option>
 			% end
@@ -22,7 +22,7 @@
 		</td>
 	<tr>
 		<td></td>
-		<td><input type='submit' value='Add Participant &raquo;'></td>
+		<td><input type='submit' value='Add Participant &raquo;' id='add-participant-submit'></td>
 	</tr></tr>
 </table>
 </form>

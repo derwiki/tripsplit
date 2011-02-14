@@ -1,3 +1,5 @@
+import json
+
 import lib # Inits sys.path
 
 import bottle
@@ -22,7 +24,6 @@ def login(username):
         return {'status': 'success'}
     else:
         return {'status': 'failure', 'reason': 'Not found'}
-        
 
 @route('/create_expense', method='GET')
 @view('create_expense')
@@ -43,26 +44,33 @@ def create_expense_post():
 	expense.put()
 	print expense
 
+#TODO @ajax
 @route('/add_participant', method='POST')
 def add_participant():
 	user_id = request.POST.get('user')
 	trip_id = request.POST.get('trip')
 	user = models.User.get_by_id(int(user_id))
 	trip = models.Trip.get_by_id(int(trip_id))
-	print trip, user
+	#TODO enforce uniqueness constraint
 	participant = models.Participant(user=user, trip=trip)
 	participant.put()
-	print participant
+	return json.dumps(dict(success=True, username=user.username, email=user.email))
 
 @route('/trip_details/:trip_id')
 @validate(trip_id=int)
 @view('trip_details')
-def list_expenses(trip_id):
+def trip_details(trip_id):
+	loggedin_user = request.user
 	trip = models.Trip.get_by_id(trip_id)
 	expenses = models.Expense.all().filter('trip =', trip)
 	participants = models.Participant.all().filter('trip =', trip)
-	users = models.User.all()
-	return dict(expenses=expenses, trip=trip, participants=participants, users=users)
+
+	# exclude users who are already a part of this trip
+	#TODO is there a more better way to do this?
+	participating_user_ids = set(part.user.key().id() for part in participants)
+	users = [user for user in models.User.all() if user.key().id() not in participating_user_ids]
+
+	return dict(expenses=expenses, trip=trip, participants=participants, users=users, loggedin_user=request.user)
 
 @route('/list_trips')
 @view('list_trips')
@@ -76,8 +84,7 @@ def session_test():
     request.session.setdefault('test', 0)
     request.session['test'] += 1
     return {'test': request.session['test']}
-        
-        
+
 # Run server
 from middleware import app
 bottle.debug()

@@ -1,4 +1,4 @@
-<table>
+<table id='list-participants'>
 	% for participant in participants:
 	<tr>
 		<td>{{participant.user.username}}</td>
