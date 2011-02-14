@@ -8,6 +8,7 @@ from bottle import request
 from bottle import view
 from bottle import validate
 
+import auth
 import models
 
 @route('/')
@@ -16,15 +17,41 @@ def index():
         return 'Welcome %s' % request.user.username
     return 'index'
 
+@route('/login')
 @route('/login/:username')
-def login(username):
-    user = models.User.all().filter('username =', username).get()
+def login(username=None):
+    if username:
+        user = models.User.all().filter('username =', username).get()
+    else:
+        user = auth.auth_login()
+        
     if user:
-        request.session['user_key'] = str(user.key())
-        return {'status': 'success'}
+        if user.is_saved():
+            request.session['user_key'] = str(user.key())
+            return {'status': 'success'}
+        else:
+            return {'status': 'failure', 'reason': 'Not registered'}
     else:
         return {'status': 'failure', 'reason': 'Not found'}
 
+@route('/logout')
+def logout():
+    auth.auth_logout()
+    return {'status': 'success'}
+    
+@route('/register/:username')
+def register(username):
+    user = auth.auth_login()
+    
+    if user.is_saved():
+        return {'status': 'failure', 'reason': 'Already registered as %r' % user.username}
+    
+    user.username = username
+    user.put()
+    
+    return {'status': 'success'}
+    
+    
 def data_from_post(request, *keys):
 	return dict((key, request.POST.get(key)) for key in keys)
 

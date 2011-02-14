@@ -15,6 +15,7 @@ class StandardModel(db.Expando):
 class User(StandardModel):
 	username = db.StringProperty()
 	email = db.StringProperty()
+	gae_user = db.UserProperty()
 
 class Trip(StandardModel):
 	creator = User()
