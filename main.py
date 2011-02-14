@@ -1,7 +1,5 @@
 import sys
 
-
-sys.path.insert(0, 'lib/bottle')
 import bottle
 from bottle import route
 from bottle import request
