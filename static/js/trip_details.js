@@ -22,7 +22,7 @@ trip_details.addParticipantHandler = function () {
 			new_participant += ('<td>' + respJSON.username + '</td>\n');
 			new_participant += ('<td>' + respJSON.email+ '</td>\n');
 			new_participant += '</tr>\n';
-			$('#list-participants tr:last').after(new_participant);
+			$('#list-participants').append(new_participant);
 			$('select#add-participant option[value="' + data['user'] +'"]').remove();
 		} else {
 			console.log(respJSON.error);
@@ -47,13 +47,7 @@ trip_details.removeParticipantHandler = function(e) {
 
 			// add participant back to dropdown
 			var new_option = '<option value="' + respJSON['user_id'] + '">' + respJSON['username'] + '</option>\n';
-			// handle cases both when select has children and when it is empty
-			if ($('select#add-participant option:last').length > 0) {
-				$('select#add-participant option:last').after(new_option);
-			} else {
-				$('select#add-participant').html(new_option);
-			}
-
+			$('select#add-participant').append(new_option);
 		} else {
 			console.log(respJSON.error);
 		}
