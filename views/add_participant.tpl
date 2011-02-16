@@ -5,7 +5,7 @@
 		<td>
 			<select name='trip' id='add-participant-trip'>
 			% for trip in trips:
-				<option value='{{trip.key().id()}}'>{{trip.name}} ({{trip.created.strftime('%Y-%m-%d')}})</option>
+				<option value='{{ trip.key().id() }}'>{{ trip.name }} ({{ trip.created.strftime('%Y-%m-%d') }})</option>
 			% end
 			</select>
 		</td>
@@ -16,7 +16,7 @@
 		<td>
 			<select name='user' id='add-participant'>
 			% for user in users:
-				<option value='{{user.key().id()}}'>{{user.username}}</option>
+				<option value='{{ user.key().id() }}'>{{ user.username }}</option>
 			% end
 			</select>
 		</td>

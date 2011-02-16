@@ -99,7 +99,6 @@ def remove_participant():
 @validate(trip_id=int)
 @view('trip_details')
 def trip_details(trip_id):
-	loggedin_user = request.user
 	trip = models.Trip.get_by_id(trip_id)
 	expenses = models.Expense.all().filter('trip =', trip)
 	participants = models.Participant.all().filter('trip =', trip)
@@ -116,6 +115,7 @@ def trip_details(trip_id):
 def list_trips():
 	return dict(
 		trips=models.Trip.all(),
+		loggedin_user=request.user
 	)
 
 @route
