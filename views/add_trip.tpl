@@ -1,4 +1,4 @@
-<form id='add-trip-form'>
+<form id='add-trip-form' action='/add_trip' method='post'>
 <table>
 	<tbody>
 		% fields = (('name', 'Trip Name'), ('description', 'Description'), ('notes', 'Notes'))

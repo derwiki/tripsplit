@@ -118,6 +118,14 @@ def list_trips():
 		loggedin_user=request.user
 	)
 
+@route('/add_trip', method='POST')
+def add_trip():
+	data = data_from_post(request, 'name', 'description', 'notes')
+	data['creator'] = request.user
+	trip = models.Trip(**data)
+	trip.put()
+	bottle.redirect('/trip_details/%d' % trip.key().id())
+
 @route
 def session_test():
     request.session.setdefault('test', 0)
