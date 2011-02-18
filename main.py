@@ -100,7 +100,6 @@ def remove_participant():
 @view('trip_details')
 def trip_details(trip_id):
 	trip = models.Trip.get_by_id(trip_id)
-	expenses = models.Expense.all().filter('trip =', trip)
 	participants = models.Participant.all().filter('trip =', trip)
 
 	# exclude users who are already a part of this trip
@@ -108,7 +107,14 @@ def trip_details(trip_id):
 	participating_user_ids = set(part.user.key().id() for part in participants)
 	users = [user for user in models.User.all() if user.key().id() not in participating_user_ids]
 
-	return dict(expenses=expenses, trip=trip, participants=participants, users=users, loggedin_user=request.user)
+	return dict(
+		expenses=models.Expense.all().filter('trip =', trip),
+		trip=models.Trip.get_by_id(trip_id),
+		trips=models.Trip.all(),
+		participants=participants,
+		users=users,
+		loggedin_user=request.user
+	)
 
 @route('/list_trips')
 @view('list_trips')

@@ -5,6 +5,15 @@ trip_details.pageLoaded = function() {
 	$('#add-participant-form').submit(trip_details.addParticipantHandler);
 	$('#list-participants').click(trip_details.removeParticipantHandler);
 	$('#add-expense-form').submit(trip_details.addExpenseHandler);
+
+	$('.navtab').each(function(index, node) {
+		var field = node.id.split('-')[0];
+		$('#' + field +'-tab').click(function() {
+			$('.navtab[id!="' + node.id + '"]').hide();
+			$('div#' + field + '-content').show()
+		});
+	});
+	
 };
 
 

@@ -5,6 +5,7 @@
 <title>{{ title or '' }}</title>
 <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js' type='text/javascript'></script>
 % locals().get('jsblock', lambda: None)()
+<link rel="stylesheet" href="/static/css/base.css" type="text/css">
 </head>
 
 <body>
