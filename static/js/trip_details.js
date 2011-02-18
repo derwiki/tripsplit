@@ -6,6 +6,14 @@ trip_details.pageLoaded = function() {
 	$('#list-participants').click(trip_details.removeParticipantHandler);
 	$('#add-expense-form').submit(trip_details.addExpenseHandler);
 
+	var selectedTab = window.location.hash;
+	console.log('selected tab from URL', selectedTab);
+	selectedTab = selectedTab || '#trips';
+	console.log('selected tab displaying', selectedTab);
+	var selectedTabSel = 'div' + selectedTab + '-content'
+	console.log(selectedTabSel);
+	$(selectedTabSel).removeClass('hidden').show();
+
 	$('.navtab').each(function(index, node) {
 		var field = node.id.split('-')[0];
 		$('#' + field +'-tab').click(function() {
@@ -13,7 +21,6 @@ trip_details.pageLoaded = function() {
 			$('div#' + field + '-content').show()
 		});
 	});
-	
 };
 
 

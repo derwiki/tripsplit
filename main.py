@@ -116,14 +116,6 @@ def trip_details(trip_id):
 		loggedin_user=request.user
 	)
 
-@route('/list_trips')
-@view('list_trips')
-def list_trips():
-	return dict(
-		trips=models.Trip.all(),
-		loggedin_user=request.user
-	)
-
 @route('/add_trip', method='POST')
 def add_trip():
 	data = data_from_post(request, 'name', 'description', 'notes')

@@ -8,9 +8,9 @@ $(document).ready(function() {
 </script>
 %end
 
-<a href='#' id='expenses-tab'>Expenses</a> |
-<a href='#' id='participants-tab'>Participants</a> |
-<a href='#' id='trips-tab'>Trips</a>
+<a href='#expenses' id='expenses-tab'>Expenses</a> |
+<a href='#participants' id='participants-tab'>Participants</a> |
+<a href='#trips' id='trips-tab'>Trips</a>
 
 
 <div id='expenses-content' class='navtab hidden'>
@@ -27,7 +27,7 @@ $(document).ready(function() {
 	%include add_participant trips=[trip], users=users
 </div>
 
-<div id='trips-content' class='navtab'>
+<div id='trips-content' class='navtab hidden'>
 	<h3>Trips</h3>
 	%include list_trips trips=trips
 	<div>Add new trip</div>
