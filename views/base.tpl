@@ -14,6 +14,7 @@
 		Logged in as <a href='#'>{{ loggedin_user.username }}</a>
 	% else:
 		<a href='#'>login</a>
+	% end
 </div>
 %include
 </body>

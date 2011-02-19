@@ -1,5 +1,8 @@
 import json
+import logging
+import traceback
 
+#TODO this seems messy, importing a library makes the app work?
 import lib # Inits sys.path
 
 import bottle
@@ -10,6 +13,9 @@ from bottle import validate
 
 import auth
 import models
+
+log = logging.getLogger('servlet')
+log.setLevel(logging.DEBUG)
 
 @route('/')
 def index():
@@ -24,7 +30,7 @@ def login(username=None):
         user = models.User.all().filter('username =', username).get()
     else:
         user = auth.auth_login()
-        
+
     if user:
         if user.is_saved():
             request.session['user_key'] = str(user.key())
@@ -38,38 +44,50 @@ def login(username=None):
 def logout():
     auth.auth_logout()
     return {'status': 'success'}
-    
+
 @route('/register/:username')
 def register(username):
     user = auth.auth_login()
-    
+
     if user.is_saved():
         return {'status': 'failure', 'reason': 'Already registered as %r' % user.username}
-    
+
     user.username = username
     user.put()
-    
+
     return {'status': 'success'}
-    
-    
+
+
 def data_from_post(request, *keys):
 	return dict((key, request.POST.get(key)) for key in keys)
 
 @route('/add_expense', method='POST')
 def add_expense():
 	try:
-		loggedin_user = request.user
 		data = data_from_post(request, 'amount', 'description', 'notes', 'trip')
 		data['amount'] = float(data['amount'])
 		data['trip'] = models.Trip.get_by_id(int(data['trip']))
-		data['payer'] = loggedin_user
+		data['payer'] = request.user
+		log.debug('data: %s' % data)
 		expense = models.Expense(**data)
 		expense.put()
+		log.debug('expense: %s' % expense)
+		log.debug('user: %s' % request.user)
+		log.debug('request: %s' % request)
 		trip = data['trip']
-		del data['trip']
-		return json.dumps(dict(success=True, trip=trip.key().id(), created=expense.created.strftime('%Y-%m-%d'), expense_id=expense.key().id(), **data))
+		return json.dumps(dict(
+			success=True,
+			trip=trip.key().id(),
+			created=expense.created.strftime('%Y-%m-%d'),
+			expense_id=expense.key().id(),
+			amount=data.pop('amount'),
+			description=data.pop('description'),
+			payer=request.user.username
+		))
 	except Exception, e:
-		return json.dumps(dict(sucess=False, error=e))
+		log.error(traceback.format_exc())
+		log.error(e)
+		return json.dumps(dict(sucess=False, error=str(e)))
 
 #TODO @ajax
 @route('/add_participant', method='POST')
@@ -94,6 +112,13 @@ def remove_participant():
 	user_name = participant.user.username
 	participant.delete()
 	return json.dumps(dict(success=True, user_id=user_id, username=user_name))
+
+@route('/remove_expense', method='POST')
+def remove_expense():
+	expense_id = request.POST.get('expense');
+	expense = models.Expense.get_by_id(int(expense_id))
+	expense.delete()
+	return json.dumps(dict(success=True))
 
 @route('/trip_details/:trip_id')
 @validate(trip_id=int)
@@ -133,7 +158,7 @@ def session_test():
 # Run server
 @bottle.error()
 def errors(err):
-    import sys, traceback
+    import sys
     sys.stderr.write(err.traceback)
     return repr(err)
 

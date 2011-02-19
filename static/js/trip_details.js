@@ -5,6 +5,7 @@ trip_details.pageLoaded = function() {
 	$('#add-participant-form').submit(trip_details.addParticipantHandler);
 	$('#list-participants').click(trip_details.removeParticipantHandler);
 	$('#add-expense-form').submit(trip_details.addExpenseHandler);
+	$('#list-expenses').click(trip_details.removeExpenseHandler);
 
 	var selectedTab = window.location.hash;
 	console.log('selected tab from URL', selectedTab);
@@ -60,7 +61,7 @@ trip_details.addExpenseHandler = function() {
 		console.log(respJSON);
 		if (respJSON.success) {
 			var new_row = "<tr><td><a href='#'>[ X ]</a></td>";
-			$.each(['created', 'username', 'amount', 'description'], function(index, key) {
+			$.each(['created', 'payer', 'amount', 'description'], function(index, key) {
 				new_row += "<td>" + respJSON[key] + "</td>";
 			});
 			new_row += "</tr>";
@@ -97,4 +98,23 @@ trip_details.removeParticipantHandler = function(e) {
 	});
 	return false;
 };
-	
+
+trip_details.removeExpenseHandler = function(e) {
+	var expenseRowId= e.target.parentElement.parentElement.id;
+	var expenseId = expenseRowId.split('-')[1];
+	var data = {'expense': expenseId};
+	console.log('removeExpenseHandler data', data);
+
+	$.post('/remove_expense', data, function(resp) {
+		var respJSON = JSON.parse(resp)
+		console.log(respJSON);
+		if (respJSON.success) {
+			// remove row
+			$('#' + expenseRowId).remove();
+		} else {
+			console.log(respJSON.error);
+		}
+	});
+	return false;
+};
+

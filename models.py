@@ -24,7 +24,7 @@ class Trip(StandardModel):
 	created = db.DateTimeProperty(auto_now_add=True)
 
 class Expense(StandardModel):
-	payer = User()
+	payer = db.ReferenceProperty(reference_class=User)
 	amount = db.FloatProperty()
 	description = db.StringProperty()
 	notes = db.StringProperty()

@@ -8,9 +8,16 @@ $(document).ready(function() {
 </script>
 %end
 
+<a href='#newtrip' id='newtrip-tab'>New Trip</a> |
 <a href='#expenses' id='expenses-tab'>Expenses</a> |
 <a href='#participants' id='participants-tab'>Participants</a> |
 <a href='#trips' id='trips-tab'>Trips</a>
+
+
+<div id='newtrip-content' class='navtab hidden'>
+	<h3>I Just Went on a Trip</h3>
+	%include add_trip
+</div>
 
 
 <div id='expenses-content' class='navtab hidden'>
