@@ -10,7 +10,7 @@
 
 <body>
 <div style='text-align: right;'>
-	% if loggedin_user:
+	% if locals().get('loggedin_user', None):
 		Logged in as <a href='#'>{{ loggedin_user.username }}</a>
 	% else:
 		<a href='#'>login</a>
