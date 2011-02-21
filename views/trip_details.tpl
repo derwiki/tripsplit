@@ -1,5 +1,7 @@
 %def jsblock():
 <script src='/static/js/trip_details.js'></script>
+<script src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js'></script>
+<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.8/themes/base/jquery-ui.css" type="text/css" media="all" />
 <script type='text/javascript'>
 var trip_details = trip_details || {};
 $(document).ready(function() {
@@ -9,8 +11,8 @@ $(document).ready(function() {
 %end
 
 <a href='#newtrip' id='newtrip-tab'>New Trip</a> |
-<a href='#expenses' id='expenses-tab'>Expenses</a> |
 <a href='#participants' id='participants-tab'>Participants</a> |
+<a href='#expenses' id='expenses-tab'>Expenses</a> |
 <a href='#trips' id='trips-tab'>Trips</a>
 
 
@@ -30,8 +32,16 @@ $(document).ready(function() {
 <div id='participants-content' class='navtab hidden'>
 	<h3>Participants</h3>
 	%include list_participants participants=participants
-	<div>Add new participant</div>
-	%include add_participant trips=[trip], users=users
+	<div id='invite-content'>
+		<h3>Invite Trip Participants</h3>
+		<ul id='list-participants'>
+		</ul>
+		<div class='ui-widget'>
+			<label for='add-participant'>Participant</label><br>
+			<input type='text' id='add-participant'>
+		</div>
+	</div>
+	%#include add_participant trips=[trip], users=users
 </div>
 
 <div id='trips-content' class='navtab hidden'>

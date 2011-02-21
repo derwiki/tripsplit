@@ -22,32 +22,12 @@ trip_details.pageLoaded = function() {
 			$('div#' + field + '-content').show()
 		});
 	});
+
+	trip_details.initAutocomplete();
 };
 
 
-trip_details.addParticipantHandler = function () {
-	var data = {
-		'user': $('select#add-participant').val(),
-		'trip': $('select#add-participant-trip').val()
-	};
 
-	$.post('/add_participant', data, function(resp) {
-		var respJSON = JSON.parse(resp);
-		console.log(respJSON);
-		if (respJSON.success) {
-			var new_participant = '<tr id="participant-' + respJSON.participant + '">\n';
-			new_participant += '<td><a href="#">[ X ]</a></td>';
-			new_participant += ('<td>' + respJSON.username + '</td>\n');
-			new_participant += ('<td>' + respJSON.email+ '</td>\n');
-			new_participant += '</tr>\n';
-			$('#list-participants').append(new_participant);
-			$('select#add-participant option[value="' + data['user'] +'"]').remove();
-		} else {
-			console.log(respJSON.error);
-		}
-	});
-	return false;
-};
 
 trip_details.addExpenseHandler = function() {
 	var data = {'trip': $('select#add-expense-trip').val()};
@@ -77,7 +57,7 @@ trip_details.addExpenseHandler = function() {
 
 trip_details.removeParticipantHandler = function(e) {
 	// id='participant,<id>'
-	var participantRowId = e.target.parentElement.parentElement.id;
+	var participantRowId = e.target.parentNode.parentNode.id;
 	var participantId = participantRowId.split('-')[1];
 	var data = {'participant': participantId};
 
@@ -118,3 +98,44 @@ trip_details.removeExpenseHandler = function(e) {
 	return false;
 };
 
+trip_details.addParticipantHandler = function (data) {
+	$.post('/add_participant', data, function(resp) {
+		var respJSON = JSON.parse(resp);
+		console.log(respJSON);
+		if (respJSON.success) {
+			var new_participant = '<tr id="participant-' + respJSON.participant + '">\n';
+			new_participant += '<td><a href="#">[ X ]</a></td>';
+			new_participant += ('<td>' + respJSON.username + '</td>\n');
+			new_participant += ('<td>' + respJSON.email+ '</td>\n');
+			new_participant += '</tr>\n';
+			$('#list-participants').append(new_participant);
+		} else {
+			console.log(respJSON.error);
+		}
+	});
+	return false;
+};
+
+trip_details.tripid = 3;
+
+trip_details.initAutocomplete = function() {
+	$.getJSON('/json/users', function(data) {
+		trip_details.autocompleteMap = data;
+		var keys = [];
+		for (var key in data) {
+			keys.push(key);
+		}
+
+		$('#add-participant').autocomplete({source: keys});
+		$('#add-participant').bind('autocompleteselect', function(e, ui) {
+			var data = {
+				'user': trip_details.autocompleteMap[ui.item.value]['id'],
+				'trip': trip_details.tripid
+			}
+			console.log(data);
+			trip_details.addParticipantHandler(data);	
+			$(this).val('');
+			return false;
+		});
+	});
+};

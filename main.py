@@ -96,6 +96,7 @@ def add_expense():
 def add_participant():
     user_id = request.POST.get('user')
     trip_id = request.POST.get('trip')
+    log.debug('%s, %s' % (user_id, trip_id))
     user = models.User.get_by_id(int(user_id))
     trip = models.Trip.get_by_id(int(trip_id))
     #TODO enforce uniqueness constraint
@@ -155,8 +156,10 @@ def add_trip():
 
 @route('/json/users')
 def json_users():
-	return json.dumps([user.email for user in models.User.all() if user.email is not None])
-    #return json.dumps(dict((user.key().id(), user.email) for user in models.User.all()))
+	return json.dumps(dict([(
+		(user.email),
+		(dict(id=user.key().id(), username=user.username))
+	) for user in models.User.all() if user.email is not None]))
 
 @route
 def session_test():
