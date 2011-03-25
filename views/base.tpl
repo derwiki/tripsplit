@@ -3,9 +3,12 @@
 <html>
 <head>
 <title>{{ title or '' }}</title>
-<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js' type='text/javascript'></script>
+<script src='/static/js/jquery-1.4.2.min.js'></script>
+<script src='/static/js/jquery-ui.min.js'></script>
 % locals().get('jsblock', lambda: None)()
-<link rel="stylesheet" href="/static/css/base.css" type="text/css">
+<link rel="stylesheet" href="/static/css/base.css" type="text/css" media="all" />
+<link rel="stylesheet" href="/static/css/jquery-ui.css" type="text/css" media="all" />
+% locals().get('cssblock', lambda: None)()
 </head>
 
 <body>

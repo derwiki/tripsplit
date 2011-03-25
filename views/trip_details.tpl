@@ -1,7 +1,5 @@
 %def jsblock():
 <script src='/static/js/trip_details.js'></script>
-<script src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js'></script>
-<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.8/themes/base/jquery-ui.css" type="text/css" media="all" />
 <script type='text/javascript'>
 var trip_details = trip_details || {};
 $(document).ready(function() {

@@ -19,10 +19,7 @@ log.setLevel(logging.DEBUG)
 
 @route('/')
 def index():
-    if request.user:
-        return 'Welcome %s' % request.user.username
-    else:
-        return bottle.template('loggedout_home')
+	return bottle.template('home', dict(user=request.user))
 
 @route('/login')
 @route('/login/:username')
