@@ -22,21 +22,22 @@ def index():
     log.info('user: %s' % (request.user))
     return bottle.template('home', dict(user=request.user))
 
-@bottle.route('/trip_details/:trip_id')
+@bottle.route('/details/:trip_id')
 @validate(trip_id=int)
-@view('trip_details')
-def trip_details(trip_id):
+@view('details')
+def details(trip_id):
     trip = models.Trip.get_by_id(trip_id)
     participants = models.Participant.all().filter('trip =', trip)
 
     # exclude users who are already a part of this trip
     #TODO is there a more better way to do this?
     participating_user_ids = set(part.user.key().id() for part in participants)
+    log.debug('Participants for trip_id %d: %s' % (trip_id, participating_user_ids))
     users = [user for user in models.User.all() if user.key().id() not in participating_user_ids]
 
     return dict(
         expenses=models.Expense.all().filter('trip =', trip),
-        trip=models.Trip.get_by_id(trip_id),
+        trip=trip,
         trips=models.Trip.all(),
         participants=participants,
         users=users,

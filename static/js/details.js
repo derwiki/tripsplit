@@ -1,11 +1,11 @@
-var trip_details = trip_details || {};
+var details = details || {};
 
-trip_details.pageLoaded = function() {
+details.pageLoaded = function() {
 	console.log('entering pageLoaded');
-	$('#add-participant-form').submit(trip_details.addParticipantHandler);
-	$('#list-participants').click(trip_details.removeParticipantHandler);
-	$('#add-expense-form').submit(trip_details.addExpenseHandler);
-	$('#list-expenses').click(trip_details.removeExpenseHandler);
+	$('#add-participant-form').submit(details.addParticipantHandler);
+	$('#list-participants').click(details.removeParticipantHandler);
+	$('#add-expense-form').submit(details.addExpenseHandler);
+	$('#list-expenses').click(details.removeExpenseHandler);
 
 	var selectedTab = window.location.hash;
 	console.log('selected tab from URL', selectedTab);
@@ -23,21 +23,17 @@ trip_details.pageLoaded = function() {
 		});
 	});
 
-	trip_details.initAutocomplete();
+	details.initAutocomplete();
 };
 
-
-
-
-trip_details.addExpenseHandler = function() {
+details.addExpenseHandler = function() {
 	var data = {'trip': $('select#add-expense-trip').val()};
 	$.each($('#add-expense-form input[type="text"]'), function(index, field) {
 		data[field.name] = field.value;
 	});
 	console.log('data', data);
 
-	$.post('/add_expense', data, function(resp) {
-		var respJSON = JSON.parse(resp);
+	$.post('/add_expense', data, function(respJSON) {
 		console.log(respJSON);
 		if (respJSON.success) {
 			var new_row = "<tr><td><a href='#'>[ X ]</a></td>";
@@ -55,16 +51,15 @@ trip_details.addExpenseHandler = function() {
 	return false;
 };
 
-trip_details.removeParticipantHandler = function(e) {
+details.removeParticipantHandler = function(e) {
 	// id='participant,<id>'
 	var participantRowId = e.target.parentNode.parentNode.id;
 	var participantId = participantRowId.split('-')[1];
 	var data = {'participant': participantId};
 
 	console.log('data', data);
-	$.post('/remove_participant', data, function(resp) {
-		var respJSON = JSON.parse(resp)
-		console.log(respJSON);
+	$.post('/remove_participant', data, function(respJSON) {
+		console.log('remove_participant', respJSON);
 		if (respJSON.success) {
 			// remove row
 			$('#' + participantRowId).remove();
@@ -79,14 +74,13 @@ trip_details.removeParticipantHandler = function(e) {
 	return false;
 };
 
-trip_details.removeExpenseHandler = function(e) {
+details.removeExpenseHandler = function(e) {
 	var expenseRowId= e.target.parentElement.parentElement.id;
 	var expenseId = expenseRowId.split('-')[1];
 	var data = {'expense': expenseId};
 	console.log('removeExpenseHandler data', data);
 
-	$.post('/remove_expense', data, function(resp) {
-		var respJSON = JSON.parse(resp)
+	$.post('/remove_expense', data, function(respJSON) {
 		console.log(respJSON);
 		if (respJSON.success) {
 			// remove row
@@ -98,10 +92,8 @@ trip_details.removeExpenseHandler = function(e) {
 	return false;
 };
 
-trip_details.addParticipantHandler = function (data) {
-	$.post('/add_participant', data, function(resp) {
-		var respJSON = JSON.parse(resp);
-		console.log(respJSON);
+details.addParticipantHandler = function(data) {
+	$.post('/add_participant', data, function(respJSON) {
 		if (respJSON.success) {
 			var new_participant = '<tr id="participant-' + respJSON.participant + '">\n';
 			new_participant += '<td><a href="#">[ X ]</a></td>';
@@ -116,11 +108,9 @@ trip_details.addParticipantHandler = function (data) {
 	return false;
 };
 
-trip_details.tripid = 3;
-
-trip_details.initAutocomplete = function() {
+details.initAutocomplete = function() {
 	$.getJSON('/json/users', function(data) {
-		trip_details.autocompleteMap = data;
+		details.autocompleteMap = data;
 		var keys = [];
 		for (var key in data) {
 			keys.push(key);
@@ -129,11 +119,11 @@ trip_details.initAutocomplete = function() {
 		$('#add-participant').autocomplete({source: keys});
 		$('#add-participant').bind('autocompleteselect', function(e, ui) {
 			var data = {
-				'user': trip_details.autocompleteMap[ui.item.value]['id'],
-				'trip': trip_details.tripid
+				'user': details.autocompleteMap[ui.item.value]['id'],
+				'trip': details.tripid
 			}
-			console.log(data);
-			trip_details.addParticipantHandler(data);	
+			console.log('addParticipant data', data);
+			details.addParticipantHandler(data);	
 			$(this).val('');
 			return false;
 		});

@@ -1,10 +1,11 @@
 %def jsblock():
-<script src='/static/js/trip_details.js'></script>
+<script src='/static/js/details.js'></script>
 <script type='text/javascript'>
-var trip_details = trip_details || {};
+var details = details || {};
 $(document).ready(function() {
-	trip_details.pageLoaded();
+	details.pageLoaded();
 });
+details.tripid = {{ trip.key().id() }};
 </script>
 %end
 

@@ -11,6 +11,7 @@ class StandardModel(db.Expando):
 	def __str__(self):
 		values = ', '.join('%s=\'%s\'' % (key, getattr(self, key)) for key in self.properties().keys())
 		return '%s(%s)' % (self.__class__.__name__, values)
+	__repr__ = __str__
 
 class User(StandardModel):
 	username = db.StringProperty()
@@ -18,7 +19,7 @@ class User(StandardModel):
 	gae_user = db.UserProperty()
 
 class Trip(StandardModel):
-	creator = User()
+	creator = db.ReferenceProperty(reference_class=User)
 	name = db.StringProperty()
 	description = db.StringProperty()
 	created = db.DateTimeProperty(auto_now_add=True)
@@ -34,5 +35,4 @@ class Expense(StandardModel):
 class Participant(StandardModel):
 	user = db.ReferenceProperty(reference_class=User)
 	trip = db.ReferenceProperty(reference_class=Trip)
-
 
