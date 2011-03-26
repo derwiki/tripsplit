@@ -17,9 +17,23 @@ import models
 log = logging.getLogger('servlet')
 log.setLevel(logging.DEBUG)
 
+def ajax(*args, **kwargs):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            try:
+                res = func(*args, **kwargs)
+                res.setdefault('success', True)
+                return json.dumps(res)
+            except Exception, e:
+                log.error(traceback.format_exc())
+                log.error(e)
+                return json.dumps(dict(sucess=False, error=str(e)))
+        return wrapper
+    return decorator
+
 @route('/')
 def index():
-	return bottle.template('home', dict(user=request.user))
+    return bottle.template('home', dict(user=request.user))
 
 @route('/login')
 @route('/login/:username')
@@ -60,35 +74,30 @@ def register(username):
 def data_from_post(request, *keys):
     return dict((key, request.POST.get(key)) for key in keys)
 
+@ajax
 @route('/add_expense', method='POST')
 def add_expense():
-    try:
-        data = data_from_post(request, 'amount', 'description', 'notes', 'trip')
-        data['amount'] = float(data['amount'])
-        data['trip'] = models.Trip.get_by_id(int(data['trip']))
-        data['payer'] = request.user
-        log.debug('data: %s' % data)
-        expense = models.Expense(**data)
-        expense.put()
-        log.debug('expense: %s' % expense)
-        log.debug('user: %s' % request.user)
-        log.debug('request: %s' % request)
-        trip = data['trip']
-        return json.dumps(dict(
-            success=True,
-            trip=trip.key().id(),
-            created=expense.created.strftime('%Y-%m-%d'),
-            expense_id=expense.key().id(),
-            amount=data.pop('amount'),
-            description=data.pop('description'),
-            payer=request.user.username
-        ))
-    except Exception, e:
-        log.error(traceback.format_exc())
-        log.error(e)
-        return json.dumps(dict(sucess=False, error=str(e)))
+    data = data_from_post(request, 'amount', 'description', 'notes', 'trip')
+    data['amount'] = float(data['amount'])
+    data['trip'] = models.Trip.get_by_id(int(data['trip']))
+    data['payer'] = request.user
+    log.debug('data: %s' % data)
+    expense = models.Expense(**data)
+    expense.put()
+    log.debug('expense: %s' % expense)
+    log.debug('user: %s' % request.user)
+    log.debug('request: %s' % request)
+    trip = data['trip']
+    return dict(
+        trip=trip.key().id(),
+        created=expense.created.strftime('%Y-%m-%d'),
+        expense_id=expense.key().id(),
+        amount=data.pop('amount'),
+        description=data.pop('description'),
+        payer=request.user.username
+    )
 
-#TODO @ajax
+@ajax
 @route('/add_participant', method='POST')
 def add_participant():
     user_id = request.POST.get('user')
@@ -102,7 +111,7 @@ def add_participant():
         return json.dumps(dict(success=False, error='%s is already participating on %s' % (user, trip)))
     participant = models.Participant(user=user, trip=trip)
     participant.put()
-    return json.dumps(dict(success=True, username=user.username, email=user.email, participant=participant.key().id()))
+    return dict(username=user.username, email=user.email, participant=participant.key().id())
 
 @route('/remove_participant', method='POST')
 def remove_participant():
@@ -113,12 +122,13 @@ def remove_participant():
     participant.delete()
     return json.dumps(dict(success=True, user_id=user_id, username=user_name))
 
+@ajax
 @route('/remove_expense', method='POST')
 def remove_expense():
     expense_id = request.POST.get('expense');
     expense = models.Expense.get_by_id(int(expense_id))
     expense.delete()
-    return json.dumps(dict(success=True))
+    return {}
 
 @route('/trip_details/:trip_id')
 @validate(trip_id=int)
@@ -141,6 +151,7 @@ def trip_details(trip_id):
         loggedin_user=request.user
     )
 
+@ajax
 @route('/add_trip', method='POST')
 def add_trip():
     data = data_from_post(request, 'tripname', 'description', 'notes')
@@ -149,14 +160,14 @@ def add_trip():
     trip = models.Trip(**data)
     trip.put()
     log.debug("trip_id: %s" % trip.key().id())
-    return json.dumps(dict(success=True, trip_id=trip.key().id()))
+    return dict(trip_id=trip.key().id())
 
+@ajax
 @route('/json/users')
 def json_users():
-	return json.dumps(dict([(
-		(user.email),
-		(dict(id=user.key().id(), username=user.username))
-	) for user in models.User.all() if user.email is not None]))
+    return dict((
+        user.email, {'id': user.key().id(), 'username': user.username}
+    ) for user in models.User.all())# if user.email is not None))
 
 @route
 def session_test():

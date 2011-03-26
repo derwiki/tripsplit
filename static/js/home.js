@@ -19,7 +19,7 @@ tripsplit.home.pageLoaded = function() {
 	});
 	$.getJSON('/json/users', function(data) {
 		tripsplit.home.users = data;
-		console.log('data', data);
+		console.log('json/users', data);
 		$('#add-participant').autocomplete({source: data});
 		$('#add-participant').bind('autocompleteselect', function(e, ui) {
 			var email = ui.item.value;
@@ -40,7 +40,7 @@ tripsplit.home.finishAddParticipants = function() {
 tripsplit.home.showTab = function(selectedTab) {
 	var selectedTabSel = 'div#' + selectedTab + '-content'
 	$(selectedTabSel).removeClass('hidden').show();
-	console.log('selected', selectedTabSel);
+	console.log('showTab, selected', selectedTabSel);
 	$('.navtab').each(function(index, node) {
 		var field = node.id.split('-')[0];
 		console.log('field, nodeid', field, node.id);
@@ -60,11 +60,11 @@ tripsplit.home.addTripHandler = function (e) {
 
 	$.post('/' + action, data, function(resp) {
 		var respJSON = JSON.parse(resp);
-		console.log(respJSON);
+		console.log('addTripHandler', respJSON);
 		if (respJSON.success) {
 			window.location.hash = tripsplit.home.nextJump[action];
 		} else {
-			console.log(respJSON.error);
+			console.log('addTripHandler error', respJSON.error);
 		}
 	});
 	return false;
