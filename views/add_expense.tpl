@@ -1,12 +1,13 @@
 <form id='add-expense-form'>
+<input type='hidden' name='trip' value='{{ trip.key().id() }}' />
 <table>
 	<tbody>
 		<tr>
-			<td><label for='trip'>Trip</label></td>
+			<td><label for='payer'>Payer</label></td>
 			<td>
-				<select name='trip' id='add-expense-trip'>
-				% for trip in trips:
-					<option value='{{ trip.key().id() }}'>{{ trip.name }} ({{ trip.created.strftime('%Y-%m-%d') }})</option>
+				<select name='payer' id='payer'>
+				% for participant in participants:
+					<option value='{{ participant.user.key().id() }}'>{{ participant.user.username }}</option>
 				% end
 				</select>
 			</td>

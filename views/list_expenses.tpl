@@ -14,7 +14,7 @@
 			<td><a href='#'>[ X ]</a></td>
 			<td>{{ expense.created.strftime('%Y-%m-%d') }}</td>
 			<td>{{ getattr(expense.payer, 'username', 'None Given') }}</td>
-			<td>{{ expense.amount }}</td>
+			<td>{{ '$%.2f' % expense.amount }}</td>
 			<td>{{ expense.description }}</td>
 		</tr>
 		% end

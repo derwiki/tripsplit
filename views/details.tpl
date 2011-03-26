@@ -9,6 +9,9 @@ details.tripid = {{ trip.key().id() }};
 </script>
 %end
 
+%# this would be nice
+%# nav = (('newtrip', 'New Trip'), ('participants', 'Participants'), ('expenses', 'Expenses'), ('trips', 'Trips')
+%#{{ ' | '.join('<a href='#%s' id='%s-tab'>%s</a>' % (action, label) for action, label in nav) }}
 <a href='#newtrip' id='newtrip-tab'>New Trip</a> |
 <a href='#participants' id='participants-tab'>Participants</a> |
 <a href='#expenses' id='expenses-tab'>Expenses</a> |
@@ -25,7 +28,7 @@ details.tripid = {{ trip.key().id() }};
 	<h3>Expenses</h3>
 	%include list_expenses expenses=expenses
 	<div>Add new expense</div>
-	%include add_expense trips=[trip]
+	%include add_expense trip=trip, participants=participants
 </div>
 
 <div id='participants-content' class='navtab hidden'>
@@ -40,7 +43,7 @@ details.tripid = {{ trip.key().id() }};
 			<input type='text' id='add-participant'>
 		</div>
 	</div>
-	%#include add_participant trips=[trip], users=users
+	%include add_participant trip=trip, users=users
 </div>
 
 <div id='trips-content' class='navtab hidden'>

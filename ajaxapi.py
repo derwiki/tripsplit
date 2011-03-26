@@ -31,13 +31,17 @@ def ajax(*args, **kwargs):
         return wrapper
     return decorator
 
+#TODO we need transactional integrity -- if the method crashes after the put()
+# the JS handler might crash but the back end has been reflected. Can we
+# either defer the put() or do something like a rollback() ?
 @ajax
 @bottle.route('/add_expense', method='POST')
 def add_expense():
-    data = data_from_post('amount', 'description', 'notes', 'trip')
+    data = data_from_post('amount', 'description', 'notes', 'trip', 'payer')
     data['amount'] = float(data['amount'])
+    log.debug('add_expense data: %s' % data)
     data['trip'] = models.Trip.get_by_id(int(data['trip']))
-    data['payer'] = request.user
+    data['payer'] = models.User.get_by_id(int(data['payer']))
     log.debug('data: %s' % data)
     expense = models.Expense(**data)
     expense.put()
@@ -52,7 +56,7 @@ def add_expense():
         expense_id=expense.key().id(),
         amount=data.pop('amount'),
         description=data.pop('description'),
-        payer=request.user.username
+        payer=data.pop('payer').username
     )
 
 @ajax

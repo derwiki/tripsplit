@@ -27,11 +27,11 @@ details.pageLoaded = function() {
 };
 
 details.addExpenseHandler = function() {
-	var data = {'trip': $('select#add-expense-trip').val()};
-	$.each($('#add-expense-form input[type="text"]'), function(index, field) {
+	var data = {'payer': $('#add-expense-form select#payer').val()};
+	$.each($('#add-expense-form input'), function(index, field) {
 		data[field.name] = field.value;
 	});
-	console.log('data', data);
+	console.log('addExpense data', data);
 
 	$.post('/add_expense', data, function(respJSON) {
 		console.log(respJSON);
