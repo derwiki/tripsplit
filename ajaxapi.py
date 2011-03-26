@@ -1,0 +1,91 @@
+import logging
+
+import bottle
+from bottle import request
+
+from helpers import ajax
+import models
+
+log = logging.getLogger('servlet')
+log.setLevel(logging.DEBUG)
+
+def data_from_post(request, *keys):
+    return dict((key, request.POST.get(key)) for key in keys)
+
+@ajax
+@bottle.route('/add_expense', method='POST')
+def add_expense():
+    data = data_from_post(request, 'amount', 'description', 'notes', 'trip')
+    data['amount'] = float(data['amount'])
+    data['trip'] = models.Trip.get_by_id(int(data['trip']))
+    data['payer'] = request.user
+    log.debug('data: %s' % data)
+    expense = models.Expense(**data)
+    expense.put()
+    log.debug('expense: %s' % expense)
+    log.debug('user: %s' % request.user)
+    log.debug('request: %s' % request)
+    trip = data['trip']
+    return dict(
+        trip=trip.key().id(),
+        created=expense.created.strftime('%Y-%m-%d'),
+        expense_id=expense.key().id(),
+        amount=data.pop('amount'),
+        description=data.pop('description'),
+        payer=request.user.username
+    )
+
+@ajax
+@bottle.route('/add_participant', method='POST')
+def add_participant():
+    user_id = request.POST.get('user')
+    trip_id = request.POST.get('trip')
+    log.debug('%s, %s' % (user_id, trip_id))
+    user = models.User.get_by_id(int(user_id))
+    trip = models.Trip.get_by_id(int(trip_id))
+    #TODO enforce uniqueness constraint
+    already_participant = models.Participant.all().filter('trip =', trip).filter('user =', user)
+    if already_participant.fetch(1):
+        return json.dumps(dict(success=False, error='%s is already participating on %s' % (user, trip)))
+    participant = models.Participant(user=user, trip=trip)
+    participant.put()
+    return dict(username=user.username, email=user.email, participant=participant.key().id())
+
+@ajax
+@bottle.route('/remove_participant', method='POST')
+def remove_participant():
+    participant_id = request.POST.get('participant');
+    participant = models.Participant.get_by_id(int(participant_id))
+    user_id = participant.user.key().id()
+    user_name = participant.user.username
+    participant.delete()
+    return json.dumps(dict(success=True, user_id=user_id, username=user_name))
+
+@ajax
+@bottle.route('/remove_expense', method='POST')
+def remove_expense():
+    expense_id = request.POST.get('expense');
+    expense = models.Expense.get_by_id(int(expense_id))
+    expense.delete()
+    return {}
+
+@ajax
+@bottle.route('/add_trip', method='POST')
+def add_trip():
+    data = data_from_post(request, 'tripname', 'description', 'notes')
+    data['creator'] = request.user
+    data['name'] = data.pop('tripname')
+    log.info('add_trip: %s' % data)
+    trip = models.Trip(**data)
+    trip.put()
+    log.info("trip_id: %s" % trip.key().id())
+    return dict(trip_id=trip.key().id())
+
+@ajax
+@bottle.route('/json/users')
+def json_users():
+    return dict((
+        user.email, {'id': user.key().id(), 'username': user.username}
+    ) for user in models.User.all())# if user.email is not None))
+
+
