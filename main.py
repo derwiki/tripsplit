@@ -1,9 +1,11 @@
+import sys
+sys.path.insert(0, 'lib/beaker')
+sys.path.insert(0, 'lib/bottle')
+sys.path.insert(0, 'lib/gaema')
+
 import json
 import logging
 import traceback
-
-#TODO this seems messy, importing a library makes the app work?
-import lib # Inits sys.path
 
 import bottle
 from bottle import route
@@ -19,6 +21,7 @@ log.setLevel(logging.DEBUG)
 
 @bottle.route('/')
 def index():
+    raise Exception()
     log.info('user: %s' % (request.user))
     return bottle.template('home', dict(user=request.user))
 
