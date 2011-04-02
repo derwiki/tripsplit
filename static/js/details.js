@@ -97,10 +97,12 @@ details.addParticipantHandler = function(data) {
 		if (respJSON.success) {
 			var new_participant = '<tr id="participant-' + respJSON.participant + '">\n';
 			new_participant += '<td><a href="#">[ X ]</a></td>';
-			new_participant += ('<td>' + respJSON.username + '</td>\n');
-			new_participant += ('<td>' + respJSON.email+ '</td>\n');
+			new_participant += ('<td><img src="' + respJSON.facebook_profile_photo_url + '" /></td>\n');
+            console.log(respJSON.facebook_profile_photo_url );
+			new_participant += ('<td>' + respJSON.name + '</td>\n');
+			new_participant += ('<td>' + respJSON.facebook_user_id + '</td>\n');
 			new_participant += '</tr>\n';
-			$('#list-participants').append(new_participant);
+			$('table#list-participants').append(new_participant);
 		} else {
 			console.log(respJSON.error);
 		}
@@ -109,18 +111,25 @@ details.addParticipantHandler = function(data) {
 };
 
 details.initAutocomplete = function() {
-	$.getJSON('/json/users', function(data) {
-		details.autocompleteMap = data;
-		var keys = [];
-		for (var key in data) {
-			keys.push(key);
-		}
+	//$.getJSON('/json/users', function(data) {
+    FB.api('/me/friends?fields=id,name,picture', function(resp) {
+        details.autocompleteMap = {};
+        var keys = [];
+        $.each(resp['data'], function(index, user) {
+			details.autocompleteMap[user.name] = {};
+			details.autocompleteMap[user.name]['id'] = user.id;
+			details.autocompleteMap[user.name]['profile_photo_url'] = user.picture;
+            keys.push(user.name);
+        });
 
 		$('#add-participant').autocomplete({source: keys});
 		$('#add-participant').bind('autocompleteselect', function(e, ui) {
+            user_data = details.autocompleteMap[ui.item.value];
 			var data = {
-				'user': details.autocompleteMap[ui.item.value]['id'],
-				'trip': details.tripid
+				'user': user_data.id,
+				'trip': details.tripid,
+                'profile_photo_url': user_data.profile_photo_url,
+                'name': ui.item.value
 			}
 			console.log('addParticipant data', data);
 			details.addParticipantHandler(data);	

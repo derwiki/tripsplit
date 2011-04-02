@@ -32,18 +32,15 @@ details.tripid = {{ trip.key().id() }};
 </div>
 
 <div id='participants-content' class='navtab hidden'>
-	<h3>Participants</h3>
-	%include list_participants participants=participants
 	<div id='invite-content'>
 		<h3>Invite Trip Participants</h3>
-		<ul id='list-participants'>
-		</ul>
 		<div class='ui-widget'>
 			<label for='add-participant'>Participant</label><br>
 			<input type='text' id='add-participant'>
 		</div>
 	</div>
 	%include add_participant trip=trip, users=users
+	%include list_participants participants=participants
 </div>
 
 <div id='trips-content' class='navtab hidden'>

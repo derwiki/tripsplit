@@ -17,6 +17,9 @@ class User(StandardModel):
 	username = db.StringProperty()
 	email = db.StringProperty()
 	gae_user = db.UserProperty()
+	facebook_user_id = db.IntegerProperty()
+	name = db.StringProperty()
+	facebook_profile_photo_url = db.StringProperty()
 
 class Trip(StandardModel):
 	creator = db.ReferenceProperty(reference_class=User)

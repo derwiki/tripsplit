@@ -64,8 +64,15 @@ def add_expense():
 def add_participant():
     user_id = request.POST.get('user')
     trip_id = request.POST.get('trip')
+    name = request.POST.get('name')
+    profile_photo_url = request.POST.get('profile_photo_url')
+
     log.debug('add_participant, user_id:trip_id::%s:%s' % (user_id, trip_id))
     user = models.User.get_by_id(int(user_id))
+    if not user:
+        user = models.User(facebook_user_id=int(user_id), name=name, facebook_profile_photo_url=profile_photo_url)
+        user.put()
+
     trip = models.Trip.get_by_id(int(trip_id))
     log.debug('add_participant, user:trip::%s:%s' % (user, trip))
     #TODO enforce uniqueness constraint
@@ -76,7 +83,7 @@ def add_participant():
     log.debug('add_participant, data: %s' % data)
     participant = models.Participant(**data)
     participant.put()
-    return dict(username=user.username, email=user.email, participant=participant.key().id(), success=True)
+    return dict(name=name, facebook_user_id=int(user_id), participant=participant.key().id(), facebook_profile_photo_url=profile_photo_url, success=True)
 
 @ajax
 @bottle.route('/remove_participant', method='POST')
