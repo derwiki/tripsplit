@@ -12,17 +12,22 @@ details.tripid = {{ trip.key().id() }};
 %# this would be nice
 %# nav = (('newtrip', 'New Trip'), ('participants', 'Participants'), ('expenses', 'Expenses'), ('trips', 'Trips')
 %#{{ ' | '.join('<a href='#%s' id='%s-tab'>%s</a>' % (action, label) for action, label in nav) }}
-<a href='#newtrip' id='newtrip-tab'>New Trip</a> |
+%#<a href='#newtrip' id='newtrip-tab'>New Trip</a> |
 <a href='#participants' id='participants-tab'>Participants</a> |
 <a href='#expenses' id='expenses-tab'>Expenses</a> |
-<a href='#trips' id='trips-tab'>Trips</a>
+<a href='#trips' id='trips-tab'>Trips</a> |
+<a href='#finish' id='finish-tab'>Finish</a>
 
 
-<div id='newtrip-content' class='navtab hidden'>
-	<h3>I Just Went on a Trip</h3>
-	%include add_trip
+%#<div id='newtrip-content' class='navtab hidden'>
+%#	<h3>I Just Went on a Trip</h3>
+%#	%include add_trip
+%#</div>
+
+<div id='finish-content' class='navtab hidden'>
+%# Does this have to be another hard page load or can we just make an AJAX call to load expenses?
+    This feature has not been implemented.
 </div>
-
 
 <div id='expenses-content' class='navtab hidden'>
 	<h3>Expenses</h3>
@@ -33,9 +38,8 @@ details.tripid = {{ trip.key().id() }};
 
 <div id='participants-content' class='navtab hidden'>
 	<div id='invite-content'>
-		<h3>Invite Trip Participants</h3>
 		<div class='ui-widget'>
-			<label for='add-participant'>Participant</label><br>
+			<label for='add-participant'>Invite Participants</label><br>
 			<input type='text' id='add-participant'>
 		</div>
 	</div>

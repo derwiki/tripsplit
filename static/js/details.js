@@ -95,14 +95,15 @@ details.removeExpenseHandler = function(e) {
 details.addParticipantHandler = function(data) {
 	$.post('/add_participant', data, function(respJSON) {
 		if (respJSON.success) {
-			var new_participant = '<tr id="participant-' + respJSON.participant + '">\n';
+			var new_participant = '<tr id="participant-' + respJSON.participant_id + '">\n';
 			new_participant += '<td><a href="#">[ X ]</a></td>';
 			new_participant += ('<td><img src="' + respJSON.facebook_profile_photo_url + '" /></td>\n');
             console.log(respJSON.facebook_profile_photo_url );
 			new_participant += ('<td>' + respJSON.name + '</td>\n');
-			new_participant += ('<td>' + respJSON.facebook_user_id + '</td>\n');
 			new_participant += '</tr>\n';
 			$('table#list-participants').append(new_participant);
+            var new_payer = "<option value='" + respJSON.user_id + "'>" + respJSON.name + "</option>"
+			$('select#payer').append(new_payer);
 		} else {
 			console.log(respJSON.error);
 		}

@@ -56,7 +56,7 @@ def add_expense():
         expense_id=expense.key().id(),
         amount=data.pop('amount'),
         description=data.pop('description'),
-        payer=data.pop('payer').username
+        payer=data.pop('payer').name
     )
 
 @ajax
@@ -83,7 +83,7 @@ def add_participant():
     log.debug('add_participant, data: %s' % data)
     participant = models.Participant(**data)
     participant.put()
-    return dict(name=name, facebook_user_id=int(user_id), participant=participant.key().id(), facebook_profile_photo_url=profile_photo_url, success=True)
+    return dict(name=name, user_id=int(user_id), participant_id=participant.key().id(), facebook_profile_photo_url=profile_photo_url, success=True)
 
 @ajax
 @bottle.route('/remove_participant', method='POST')

@@ -7,7 +7,7 @@
 			<td>
 				<select name='payer' id='payer'>
 				% for participant in participants:
-					<option value='{{ participant.user.key().id() }}'>{{ participant.user.username }}</option>
+					<option value='{{ participant.user.key().id() }}'>{{ participant.user.name }}</option>
 				% end
 				</select>
 			</td>
