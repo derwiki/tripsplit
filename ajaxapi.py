@@ -1,4 +1,6 @@
+import json
 import logging
+import traceback
 
 import bottle
 from bottle import request
@@ -122,4 +124,54 @@ def json_users():
         user.email, {'id': user.key().id(), 'username': user.username}
     ) for user in models.User.all() if user.email is not None)
 
+@ajax
+@bottle.validate(trip_id=int)
+@bottle.route('/settle_up/:trip_id', method='GET')
+def settle_up(trip_id):
+    trip = models.Trip.get_by_id(int(trip_id))
+    # this is a bit of a hack to get around lazy loading
+    all_expenses = models.Expense.all().filter('trip =', trip)
+    all_participants = [p for p in models.Participant.all().filter('trip =', trip)]
+    names = dict((p.user.facebook_user_id, p.user.name) for p in all_participants)
+
+    total_expense = sum(expense.amount for expense in all_expenses)
+    each_share = total_expense / len(all_participants)
+
+    owes = dict((participant.user.facebook_user_id, each_share) for participant in all_participants)
+    for expense in all_expenses:
+       owes[expense.payer.facebook_user_id] -= expense.amount
+
+    sorted_owes = [dict(uid=uid, amount=int(amount*100)) for uid, amount in sorted(owes.items(), key=lambda x: x[1], reverse=True)]
+
+    txns = []
+    def add_txn(message):
+        txns.append(message)
+        log.info(message)
+
+    def format_amount(amount):
+        return '$%.2f' % (int(amount) / 100.0)
+
+    add_txn('Total trip cost $%s, each shares $%s' % (total_expense, each_share))
+    most_indebted = -1
+    for unsettled in sorted_owes:
+        add_txn('%s owes %s' % (names[unsettled['uid']], format_amount(unsettled['amount'])))
+        while unsettled['amount'] > 0:
+            receiver = sorted_owes[most_indebted]
+            if unsettled['amount'] >= receiver['amount'] * -1:
+                transfer_amount = receiver['amount'] * -1
+            else:
+                transfer_amount = unsettled['amount']
+            receiver['amount'] += transfer_amount
+            unsettled['amount'] -= transfer_amount
+            add_txn('%(payer)s paid %(amount)s to %(recipient)s who is still owed %(outstanding_balance)s' % dict(
+                payer=names[unsettled['uid']],
+                amount=format_amount(transfer_amount),
+                recipient=names[sorted_owes[most_indebted]['uid']],
+                outstanding_balance=format_amount(sorted_owes[most_indebted]['amount'] * -1))
+            )
+            if receiver['amount'] == 0:
+                add_txn('%s has been paid back in full' % names[receiver['uid']])
+                most_indebted -= 1 # most indebted is paid off
+
+    return json.dumps(txns)
 

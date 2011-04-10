@@ -1,30 +1,38 @@
 var details = details || {};
 
 details.pageLoaded = function() {
-	console.log('entering pageLoaded');
+	details.refreshSettle();
 	$('#add-participant-form').submit(details.addParticipantHandler);
 	$('#list-participants').click(details.removeParticipantHandler);
 	$('#add-expense-form').submit(details.addExpenseHandler);
 	$('#list-expenses').click(details.removeExpenseHandler);
-
-	var selectedTab = window.location.hash;
-	console.log('selected tab from URL', selectedTab);
-	selectedTab = selectedTab || '#trips';
-	console.log('selected tab displaying', selectedTab);
-	var selectedTabSel = 'div' + selectedTab + '-content'
-	console.log(selectedTabSel);
-	$(selectedTabSel).removeClass('hidden').show();
-
-	$('.navtab').each(function(index, node) {
-		var field = node.id.split('-')[0];
-		$('#' + field +'-tab').click(function() {
-			$('.navtab[id!="' + node.id + '"]').hide();
-			$('div#' + field + '-content').show()
-		});
+    $('#btn-refresh-settle').click(function() {
+		console.log('refresh settle button pressed');
+		details.refreshSettle();
 	});
 
+    // load the first tab when the page loads, with default value
+    details.showTab(window.location.hash || '#participants');
+
+    // watch the URL and load tabs accordingly
+	$(window).bind('hashchange', function() {
+      details.showTab(window.location.hash);
+	});
 	details.initAutocomplete();
 };
+
+details.refreshSettle = function() {
+	$.get('/settle_up/' + details.tripid, function(respJSON) {
+		var resp = (JSON.parse(respJSON)).join('<br>');
+		$('#settle-story')[0].innerHTML = resp;
+	});
+};
+
+details.showTab = function(tab) {
+	$('.navtab[id!="' + tab + '"]').hide();
+	$('div#' + tab + '-content').show()
+};
+
 
 details.addExpenseHandler = function() {
 	var data = {'payer': $('#add-expense-form select#payer').val()};
@@ -39,6 +47,7 @@ details.addExpenseHandler = function() {
 			var new_row = "<tr><td><a href='#'>[ X ]</a></td>";
 			$.each(['created', 'payer', 'amount', 'description'], function(index, key) {
 				new_row += "<td>" + respJSON[key] + "</td>";
+                console.log(key, new_row);
 			});
 			new_row += "</tr>";
 			$('table#list-expenses tbody').append(new_row);
@@ -47,7 +56,7 @@ details.addExpenseHandler = function() {
 			console.log(respJSON.error);
 		}
 	});
-
+    $.each($('#add-expense-form input[type!=submit]'), function(index, field) { $(field).val('') });
 	return false;
 };
 
@@ -112,7 +121,6 @@ details.addParticipantHandler = function(data) {
 };
 
 details.initAutocomplete = function() {
-	//$.getJSON('/json/users', function(data) {
     FB.api('/me/friends?fields=id,name,picture', function(resp) {
         details.autocompleteMap = {};
         var keys = [];

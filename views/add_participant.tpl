@@ -4,6 +4,7 @@
 	<tr>
 		<td></td>
 		<td><input type='submit' value='Add Participant &raquo;'></td>
+        <td><a href='#expenses'>Add Expenses &raquo;</a></td>
 	</tr></tr>
 </table>
 </form>
