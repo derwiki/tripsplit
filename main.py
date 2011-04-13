@@ -2,7 +2,6 @@ import sys
 sys.path.insert(0, 'lib')
 sys.path.insert(0, 'lib/beaker')
 sys.path.insert(0, 'lib/bottle')
-sys.path.insert(0, 'lib/gaema')
 
 import json
 import logging
@@ -23,6 +22,7 @@ log.setLevel(logging.DEBUG)
 @bottle.route('/')
 def index():
     log.info('user: %s' % (request.user))
+    log.info('fb_params: %s' % (request.fb_params))
     return bottle.template('home', dict(user=request.user))
 
 @bottle.route('/details/:trip_id')
